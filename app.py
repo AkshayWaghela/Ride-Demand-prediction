@@ -58,7 +58,7 @@ predictions.select("hour", "day", "prediction").show(6)
 
 model.write().overwrite().save("ride_demand_model")
 
-pip install streamlit
+
 
 import streamlit as st
 from pyspark.sql import SparkSession
