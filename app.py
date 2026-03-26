@@ -1,7 +1,7 @@
 import streamlit as st
 import pickle
 import pandas as pd
-
+import train_model.py
 model = pickle.load(open("model.pkl", "rb"))
 
 st.title("🚕 Ride Demand Predictor (India)")
