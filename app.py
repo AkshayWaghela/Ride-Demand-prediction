@@ -55,9 +55,9 @@ model = rf.fit(train)
 
 predictions = model.transform(test)
 predictions.select("hour", "day", "prediction").show(6)
+import pickle
 
-model.write().overwrite().save("ride_demand_model")
-
+pickle.dump(model, open("model.pkl", "wb"))
 
 
 import streamlit as st
@@ -74,17 +74,13 @@ st.title("🚕 Ride Demand Predictor (India)")
 hour = st.slider("Select Hour", 0, 23)
 day = st.selectbox("Select Day (1=Sun ... 7=Sat)", [1,2,3,4,5,6,7])
 
-data = spark.createDataFrame([(hour, day)], ["hour", "day"])
+input_df = pd.DataFrame([[hour, day]], columns=["hour", "day"])
 
-assembler = VectorAssembler(inputCols=["hour", "day"], outputCol="features")
-data = assembler.transform(data)
-
-prediction = model.transform(data).collect()[0]["prediction"]
+prediction = model.predict(input_df)[0]
 
 if prediction == 0:
-    st.success("🟢 Low Demand - Cheap rides")
+    st.success("🟢 Low Demand")
 elif prediction == 1:
     st.warning("🟡 Medium Demand")
 else:
-    st.error("🔴 High Demand - Surge likely")
-
+    st.error("🔴 High Demand (Surge likely)")
